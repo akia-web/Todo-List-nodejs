@@ -2,13 +2,17 @@ name: CI
 
 on:
   push: ~
+  workflow_dispatch: ~
 
 jobs:
   init:
     name: "Say hello"
     runs-on: ubuntu-latest
     steps:
-      - name: "First step"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: "List files"
         run: |
-          echo "Hello world"
+          ls
           echo "Second line"
