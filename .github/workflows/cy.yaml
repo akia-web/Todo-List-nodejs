@@ -11,8 +11,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: "Setup Node"
+        uses: actions/setup-node@v4
+        with: 
+          node-version: 18
       
       - name: "List files"
         run: |
           ls
           echo "Second line"
+
+      - name: "Install deps"
+        run: |
+          node -v
+          npm install
+  
