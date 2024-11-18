@@ -1,16 +1,16 @@
-name: CI
+name: CI #obligatoire 
 
-on:
+on: #obligatoire
   push: ~
   workflow_dispatch: ~
 
-jobs:
+jobs: #obligatoire
   init:
     name: "Say hello"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  #recupere le code
 
       - name: "Setup Node"
         uses: actions/setup-node@v4
@@ -23,7 +23,27 @@ jobs:
           echo "Second line"
 
       - name: "Install deps"
-        run: |
-          node -v
-          npm install
-  
+        run: npm ci # a la place de npm install
+
+  build:
+    name: "build project"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Build"
+        run: echo "Project built"
+
+  tests:
+    name: "test project"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Test"
+        run: npm run test
+        
+  notify:
+    name: "test project"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Notify"
+        run: echo "CI OK"
+
+      
