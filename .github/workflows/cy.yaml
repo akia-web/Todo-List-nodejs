@@ -38,9 +38,9 @@ jobs: #obligatoire
     steps:
       - name: "Test"
         run: npm run test
-        
+
   notify:
-    name: "test project"
+    name: "notify"
     runs-on: "ubuntu-latest"
     steps:
       - name: "Notify"
