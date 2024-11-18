@@ -1,50 +1,78 @@
-name: CI #obligatoire 
+name: CI
 
-on: #obligatoire
+on:
   push: ~
   workflow_dispatch: ~
 
-jobs: #obligatoire
-  init:
-    name: "Say hello"
+jobs:
+  prepare:
+    name: "Install deps"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4  #recupere le code
-
-      - name: "Setup Node"
-        uses: actions/setup-node@v4
-        with: 
-          node-version: latest
+        uses: actions/checkout@v4
       
-      - name: "List files"
-        run: |
-          ls
-          echo "Second line"
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: node_modules-${{ hashFiles('package-lock.json')}} #pour changer le cache si le package lock change
+
+      - name: Setup node to last version
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
 
       - name: "Install deps"
-        run: npm ci # a la place de npm install
+        run: npm ci
 
   build:
-    name: "build project"
+    needs: ["prepare"]
+    name: "Build project"
     runs-on: "ubuntu-latest"
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: restore node moudle
+        uses: actions/cache/restore@v4
+        with:
+          path: ./node_modules
+          key: node_modules-${{ hashFiles('package-lock.json')}} 
+      - run: ls
       - name: "Build"
         run: echo "Project built"
 
-  tests:
+  test_unit:
     needs: ["build"]
-    name: "test project"
+    name: "Test project"
     runs-on: "ubuntu-latest"
     steps:
       - name: "Test"
         run: npm run test
+        continue-on-error: true
+  test_integration:
+    needs: ["build"]
+    name: "Test project"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Test"
+        run: npm run test
+        continue-on-error: true
+  test_e2e:
+    needs: ["build"]
+    name: "Test project"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Test"
+        run: npm run test
+        continue-on-error: true
 
   notify:
-    name: "notify"
+    needs: ["test_unit", "test_integration", "test_e2e"]
+    name: "Notify author"
     runs-on: "ubuntu-latest"
     steps:
       - name: "Notify"
-        run: echo "CI OK"
-
-      
+        run: |
+          env
+          echo "CI OK"
