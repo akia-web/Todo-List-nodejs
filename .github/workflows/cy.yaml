@@ -33,6 +33,7 @@ jobs: #obligatoire
         run: echo "Project built"
 
   tests:
+    needs: ["build"]
     name: "test project"
     runs-on: "ubuntu-latest"
     steps:
